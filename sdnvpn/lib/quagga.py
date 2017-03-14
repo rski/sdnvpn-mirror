@@ -13,10 +13,14 @@ logger = ft_logger.Logger("sdnvpn-quagga").getLogger()
 COMMON_CONFIG = config.CommonConfig()
 
 
-def odl_add_neighbor(neighbor_ip, controller):
+def odl_add_neighbor(neighbor_ip, controller_ip, controller):
+    # Explicitly pass controller_ip because controller.ip
+    # Might not be accessible from the Quagga instance
     command = 'configure-bgp -op add-neighbor --as-num 200'
-    command += ' --ip %s --use-source-ip %s' % (neighbor_ip, controller.ip)
+    command += ' --ip %s --use-source-ip %s' % (neighbor_ip, controller_ip)
     success = run_odl_cmd(controller, command)
+    # The run_cmd api is really whimsical
+    logger.info("Maybe output of %s: %s", command, success)
     return success
 
 
